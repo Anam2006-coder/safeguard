@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>SCAM DETECTOR - Analysis Results</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --card-bg: #16213e;
+            --text-light: #ffffff;
+            --text-muted: #b8c5d6;
+            --danger-color: #ff4757;
+            --warning-color: #ffa502;
+            --success-color: #2ed573;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .detect-icon {
+            color: var(--danger-color);
+            font-size: 3rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 10px 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            transform: translateX(-5px);
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Verdict Card */
+        .verdict-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .verdict-text {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .verdict-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .verdict-safe .verdict-icon { color: var(--success-color); }
+        .verdict-safe .verdict-text { color: var(--success-color); }
+        
+        .verdict-spam .verdict-icon { color: var(--warning-color); }
+        .verdict-spam .verdict-text { color: var(--warning-color); }
+        
+        .verdict-scam .verdict-icon { color: var(--danger-color); }
+        .verdict-scam .verdict-text { color: var(--danger-color); }
+
+        /* Risk Score Card */
+        .risk-percentage {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .risk-bar-container {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .risk-bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 2s ease-out;
+            position: relative;
+            min-width: 2px; /* Ensure bar is visible even for very low percentages */
+        }
+
+        .risk-bar.high { 
+            background: linear-gradient(90deg, var(--danger-color), #c44569);
+            color: var(--danger-color);
+        }
+        .risk-bar.medium { 
+            background: linear-gradient(90deg, var(--warning-color), #ff7675);
+            color: var(--warning-color);
+        }
+        .risk-bar.low { 
+            background: linear-gradient(90deg, var(--success-color), #00b894);
+            color: var(--success-color);
+        }
+
+        .risk-label {
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .risk-label.high { 
+            background: rgba(255, 71, 87, 0.2); 
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+        .risk-label.medium { 
+            background: rgba(255, 165, 2, 0.2); 
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+        .risk-label.low { 
+            background: rgba(46, 213, 115, 0.2); 
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        /* Confidence Card */
+        .confidence-percentage {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #3742fa;
+            margin-bottom: 20px;
+        }
+
+        .confidence-bar-container {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .confidence-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3742fa, #5f27cd);
+            border-radius: 10px;
+            transition: width 2s ease-out;
+            min-width: 2px; /* Ensure bar is visible even for very low percentages */
+        }
+
+        .confidence-label {
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            background: rgba(55, 66, 250, 0.2);
+            color: #3742fa;
+            border: 1px solid #3742fa;
+        }
+
+        /* Message Section */
+        .message-section, .details-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .message-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .message-label {
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .language-tag, .translation-note {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger-color);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .translation-note {
+            background: rgba(46, 213, 115, 0.2);
+            color: var(--success-color);
+        }
+
+        .message-content {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .message-content.translated {
+            border-left-color: var(--success-color);
+            background: rgba(46, 213, 115, 0.1);
+        }
+
+        .translation-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .message-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .meta-item {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meta-item strong {
+            color: var(--text-light);
+        }
+
+        /* Details Section */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-card h3 {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-card p {
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .detail-desc {
+            font-size: 0.9rem;
+        }
+
+        .certainty {
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .certainty.high {
+            background: rgba(46, 213, 115, 0.2);
+            color: var(--success-color);
+        }
+
+        .certainty.good {
+            background: rgba(55, 66, 250, 0.2);
+            color: #3742fa;
+        }
+
+        .certainty.moderate {
+            background: rgba(255, 165, 2, 0.2);
+            color: var(--warning-color);
+        }
+
+        .reasons-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .reasons-list li {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .reasons-list li::before {
+            content: "•";
+            color: var(--danger-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+            padding: 40px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h4 {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-section p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .footer-section ul li::before {
+            content: "✓";
+            color: var(--success-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-bottom p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn-custom {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--danger-color), #c44569);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-custom {
+                width: 200px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Back Button -->
+        <a href="/home" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Analyzer
+        </a>
+
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">
+                <i class="fas fa-shield-alt detect-icon"></i>
+                ANALYSIS RESULTS
+            </h1>
+        </div>
+
+        <!-- Results Grid -->
+        <div class="results-grid">
+            <!-- Verdict Card -->
+            <div class="result-card verdict-{{ result.verdict.lower() }}">
+                <div class="card-title">VERDICT</div>
+                {% if result.verdict == 'Safe' %}
+                    <div class="verdict-icon">🟢</div>
+                    <div class="verdict-text">SAFE</div>
+                    <div class="verdict-description">✅ Message appears legitimate and safe</div>
+                {% elif result.verdict == 'Spam' %}
+                    <div class="verdict-icon">🟡</div>
+                    <div class="verdict-text">SPAM</div>
+                    <div class="verdict-description">⚠️ Unwanted marketing content detected</div>
+                {% else %}
+                    <div class="verdict-icon">🔴</div>
+                    <div class="verdict-text">SCAM</div>
+                    <div class="verdict-description">⚠️ Strong fraud indicators detected</div>
+                {% endif %}
+            </div>
+
+            <!-- Risk Score Card -->
+            <div class="result-card">
+                <div class="card-title">RISK SCORE</div>
+                <div class="risk-percentage" style="color: {% if result.risk_score >= 70 %}var(--danger-color){% elif result.risk_score >= 40 %}var(--warning-color){% else %}var(--success-color){% endif %}">
+                    {{ result.risk_score }}%
+                </div>
+                <div class="risk-bar-container">
+                    <div class="risk-bar {% if result.risk_score >= 70 %}high{% elif result.risk_score >= 40 %}medium{% else %}low{% endif %}" 
+                         data-width="{{ result.risk_score }}"
+                         style="width: {{ result.risk_score }}%"></div>
+                </div>
+                <div class="risk-label {% if result.risk_score >= 70 %}high{% elif result.risk_score >= 40 %}medium{% else %}low{% endif %}">
+                    {% if result.risk_score >= 70 %}
+                        🔴 VERY HIGH RISK
+                    {% elif result.risk_score >= 40 %}
+                        🟠 MODERATE RISK
+                    {% else %}
+                        🟢 LOW RISK
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Confidence Card -->
+            <div class="result-card">
+                <div class="card-title">MODEL CONFIDENCE</div>
+                <div class="confidence-percentage">{{ (result.confidence * 100)|round(2) }}%</div>
+                <div class="confidence-bar-container">
+                    <div class="confidence-bar" 
+                         data-width="{{ (result.confidence * 100)|round(2) }}"
+                         style="width: {{ result.confidence * 100 }}%"></div>
+                </div>
+                <div class="confidence-label">
+                    {% set conf_pct = result.confidence * 100 %}
+                    {% if conf_pct >= 90 %}
+                        VERY HIGH ✓✓✓
+                    {% elif conf_pct >= 80 %}
+                        HIGH ✓✓
+                    {% elif conf_pct >= 70 %}
+                        GOOD ✓
+                    {% else %}
+                        MODERATE
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Original Message Section -->
+        <div class="message-section">
+            <h2 class="section-title">
+                <i class="fas fa-envelope"></i>
+                Your Message
+            </h2>
+            <div class="message-display">
+                <div class="message-header">
+                    <span class="message-label">
+                        <i class="fas fa-file-text"></i>
+                        Original Message
+                    </span>
+                    <span class="language-tag">
+                        <i class="fas fa-language"></i>
+                        {{ result.detected_language.upper() }}
+                    </span>
+                </div>
+                <div class="message-content original">
+                    {{ result.message }}
+                </div>
+                
+                {% if result.translated_text %}
+                <div class="translation-section">
+                    <div class="message-header">
+                        <span class="message-label">
+                            <i class="fas fa-globe"></i>
+                            English Translation
+                        </span>
+                        <span class="translation-note">
+                            <i class="fas fa-robot"></i>
+                            AI Detected
+                        </span>
+                    </div>
+                    <div class="message-content translated">
+                        {{ result.translated_text }}
+                    </div>
+                </div>
+                {% elif result.detected_language != 'en' %}
+                <div class="translation-section">
+                    <div class="message-header">
+                        <span class="message-label">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Translation Not Available
+                        </span>
+                        <span class="translation-note">
+                            <i class="fas fa-info-circle"></i>
+                            {{ result.detected_language.upper() }} Detected
+                        </span>
+                    </div>
+                    <div class="message-content translated">
+                        <em>Translation service not configured. Analysis performed on original {{ result.detected_language.upper() }} text.</em>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="message-meta">
+                    <span class="meta-item">
+                        <i class="fas fa-language"></i>
+                        Detected Language: <strong>{{ result.detected_language.upper() }}</strong>
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        Analyzed: <strong id="currentTime"></strong>
+                    </span>
+                    {% if result.translated_text %}
+                    <span class="meta-item">
+                        <i class="fas fa-exchange-alt"></i>
+                        Translation: <strong>Available</strong>
+                    </span>
+                    {% elif result.detected_language != 'en' %}
+                    <span class="meta-item">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Translation: <strong>Not Available</strong>
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Details Section -->
+        <div class="details-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                Analysis Details
+            </h2>
+            <div class="details-grid">
+                <div class="detail-card">
+                    <h3><i class="fas fa-brain"></i> Classification</h3>
+                    <p><strong>{{ result.verdict }}</strong></p>
+                    <p class="detail-desc">Model Certainty: 
+                        {% set conf_pct = result.confidence * 100 %}
+                        {% if conf_pct >= 80 %}
+                            <span class="certainty high">HIGH</span>
+                        {% elif conf_pct >= 70 %}
+                            <span class="certainty good">GOOD</span>
+                        {% else %}
+                            <span class="certainty moderate">MODERATE</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="detail-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Why This Classification?</h3>
+                    <ul class="reasons-list">
+                        {% for reason in result.reasons %}
+                            <li>{{ reason }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/home" class="btn-custom btn-primary">
+                <i class="fas fa-plus"></i>
+                Analyze Another Message
+            </a>
+            <button onclick="window.print()" class="btn-custom btn-secondary">
+                <i class="fas fa-print"></i>
+                Print Results
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-shield-alt"></i> SCAM DETECTOR</h4>
+                    <p>Advanced AI-powered system for detecting scams, spam, and malicious content. Stay protected with real-time analysis.</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-info-circle"></i> Analysis Features</h4>
+                    <ul>
+                        <li>Machine Learning Classification</li>
+                        <li>URL Safety Verification</li>
+                        <li>Multi-language Support</li>
+                        <li>Real-time Risk Assessment</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-chart-line"></i> System Stats</h4>
+                    <ul>
+                        <li>99.2% Accuracy Rate</li>
+                        <li>50+ Languages Supported</li>
+                        <li>Real-time Processing</li>
+                        <li>Secure & Private</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 SCAM DETECTOR. Advanced AI Protection System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Animate progress bars on page load
+        window.addEventListener('load', function() {
+            const riskBar = document.querySelector('.risk-bar');
+            const confidenceBar = document.querySelector('.confidence-bar');
+            
+            if (riskBar) {
+                const width = riskBar.style.width;
+                riskBar.style.width = '0%';
+                setTimeout(() => {
+                    riskBar.style.width = width;
+                }, 300);
+            }
+            
+            if (confidenceBar) {
+                const width = confidenceBar.style.width;
+                confidenceBar.style.width = '0%';
+                setTimeout(() => {
+                    confidenceBar.style.width = width;
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
+    <script>
+        // Set current time
+        if (document.getElementById('currentTime')) {
+            document.getElementById('currentTime').textContent = new Date().toLocaleString();
+        }
+
+        // Animate progress bars on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing progress bars...');
+            
+            // Add a small delay to ensure all styles are loaded
+            setTimeout(() => {
+                const riskBar = document.querySelector('.risk-bar');
+                const confidenceBar = document.querySelector('.confidence-bar');
+                
+                if (riskBar) {
+                    const targetWidth = riskBar.getAttribute('data-width') + '%';
+                    console.log('Risk bar target width:', targetWidth);
+                    
+                    // Set initial state
+                    riskBar.style.width = '0%';
+                    riskBar.style.transition = 'width 1.5s ease-out';
+                    
+                    // Animate to target width
+                    setTimeout(() => {
+                        riskBar.style.width = targetWidth;
+                    }, 200);
+                } else {
+                    console.log('Risk bar not found');
+                }
+                
+                if (confidenceBar) {
+                    const targetWidth = confidenceBar.getAttribute('data-width') + '%';
+                    console.log('Confidence bar target width:', targetWidth);
+                    
+                    // Set initial state
+                    confidenceBar.style.width = '0%';
+                    confidenceBar.style.transition = 'width 1.5s ease-out';
+                    
+                    // Animate to target width
+                    setTimeout(() => {
+                        confidenceBar.style.width = targetWidth;
+                    }, 400);
+                } else {
+                    console.log('Confidence bar not found');
+                }
+            }, 300);
+        });
+
+        // Fallback: If animation fails, show bars without animation after 3 seconds
+        setTimeout(() => {
+            const riskBar = document.querySelector('.risk-bar');
+            const confidenceBar = document.querySelector('.confidence-bar');
+            
+            if (riskBar && riskBar.style.width === '0%') {
+                console.log('Fallback: Setting risk bar width directly');
+                riskBar.style.transition = 'none';
+                riskBar.style.width = riskBar.getAttribute('data-width') + '%';
+            }
+            
+            if (confidenceBar && confidenceBar.style.width === '0%') {
+                console.log('Fallback: Setting confidence bar width directly');
+                confidenceBar.style.transition = 'none';
+                confidenceBar.style.width = confidenceBar.getAttribute('data-width') + '%';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

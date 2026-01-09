@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection - SafeGuard AI</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --card-bg: #16213e;
+            --text-light: #ffffff;
+            --text-muted: #b8c5d6;
+            --danger-color: #ff4757;
+            --warning-color: #ffa502;
+            --success-color: #2ed573;
+            --info-color: #3498db;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+            transform: translateX(-5px);
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-title i {
+            color: var(--info-color);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        .analyzer-card, .tips-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 35px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-label {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--info-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-analyze {
+            flex: 1;
+            padding: 14px 28px;
+            background: var(--info-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-analyze:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-clear {
+            padding: 14px 28px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(52, 152, 219, 0.2);
+            border-top-color: var(--info-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .alert {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: rgba(46, 213, 115, 0.2);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .alert-warning {
+            background: rgba(255, 165, 2, 0.2);
+            border: 1px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .progress-section {
+            margin-bottom: 25px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            height: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .bg-success-bar {
+            background: linear-gradient(90deg, var(--success-color), #20bf6b);
+        }
+
+        .bg-warning-bar {
+            background: linear-gradient(90deg, var(--warning-color), #ff6348);
+        }
+
+        .indicators-section, .factors-section {
+            margin-top: 25px;
+        }
+
+        .section-heading {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .badge-warning {
+            background: rgba(255, 165, 2, 0.2);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+
+        .factor-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .factor-list li {
+            padding: 10px 0;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .factor-list i {
+            color: var(--info-color);
+        }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-list li {
+            padding: 12px 0;
+            color: var(--text-muted);
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .tips-list i {
+            color: var(--success-color);
+            margin-top: 3px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+
+        <div class="header">
+            <h1 class="page-title">
+                <i class="fas fa-newspaper"></i>
+                FAKE NEWS DETECTOR
+            </h1>
+            <p class="subtitle">AI-Powered News Verification & Misinformation Detection System</p>
+        </div>
+
+        <!-- System Capabilities Section -->
+        <div class="capabilities-section" style="background: var(--card-bg); border-radius: 15px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <h2 style="font-size: 1.8rem; font-weight: 700; color: var(--text-light); margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-cogs"></i>
+                System Capabilities
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 25px; text-align: center; border: 1px solid var(--border-color);">
+                    <i class="fas fa-brain" style="font-size: 2.5rem; color: var(--info-color); margin-bottom: 15px; display: block;"></i>
+                    <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; color: var(--text-light);">AI Analysis</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0;">Advanced algorithms detect sensational language, clickbait patterns, and misinformation indicators</p>
+                </div>
+                <div style="background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 25px; text-align: center; border: 1px solid var(--border-color);">
+                    <i class="fas fa-search" style="font-size: 2.5rem; color: var(--info-color); margin-bottom: 15px; display: block;"></i>
+                    <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; color: var(--text-light);">Bias Detection</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0;">Identifies biased language, absolute statements, and emotional manipulation tactics</p>
+                </div>
+                <div style="background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 25px; text-align: center; border: 1px solid var(--border-color);">
+                    <i class="fas fa-file-alt" style="font-size: 2.5rem; color: var(--info-color); margin-bottom: 15px; display: block;"></i>
+                    <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; color: var(--text-light);">Source Analysis</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0;">Evaluates source credibility, attribution quality, and journalistic standards</p>
+                </div>
+                <div style="background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 25px; text-align: center; border: 1px solid var(--border-color);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: var(--info-color); margin-bottom: 15px; display: block;"></i>
+                    <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; color: var(--text-light);">Pattern Recognition</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin: 0;">Detects common fake news patterns, conspiracy theories, and propaganda techniques</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="how-it-works-section" style="background: var(--card-bg); border-radius: 15px; padding: 30px; margin-bottom: 30px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+            <h2 style="font-size: 1.8rem; font-weight: 700; color: var(--text-light); margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-question-circle"></i>
+                How It Works
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--info-color), #2980b9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px;">1</div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text-light);">Content Input</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin: 0;">Paste news article, headline, or social media post for analysis</p>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--info-color), #2980b9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px;">2</div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text-light);">AI Processing</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin: 0;">Analyzes language patterns, bias indicators, and credibility signals</p>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--info-color), #2980b9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px;">3</div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text-light);">Credibility Score</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin: 0;">Calculates fake news risk based on detected indicators and patterns</p>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--info-color), #2980b9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px;">4</div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text-light);">Results</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin: 0;">Provides credibility rating, risk factors, and verification recommendations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="analyzer-card">
+                <h2 class="card-title">
+                    <i class="fas fa-search"></i>
+                    News Analysis
+                </h2>
+
+                <form id="newsForm">
+                    <label for="content" class="form-label">Enter news content to verify:</label>
+                    <textarea id="content" name="content" rows="10" 
+                            placeholder="Paste news article, headline, or information here..."></textarea>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn-analyze">
+                            <i class="fas fa-fact-check"></i>
+                            Verify News
+                        </button>
+                        <button type="button" class="btn-clear" onclick="clearForm()">
+                            <i class="fas fa-eraser"></i>
+                            Clear
+                        </button>
+                    </div>
+                </form>
+
+                <div id="loadingSpinner" class="loading">
+                    <div class="spinner"></div>
+                    <p style="color: var(--text-muted);">Analyzing news content...</p>
+                </div>
+
+                <div id="results" class="results">
+                    <div class="result-card">
+                        <div id="resultContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-card">
+                <h3 class="card-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Verification Tips
+                </h3>
+                <ul class="tips-list">
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Check multiple sources before accepting information as fact</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Look for author credentials and expertise in the subject</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Verify the publication date and context of the article</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Check for bias indicators and emotional language</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span>Be skeptical of sensational headlines and claims</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('newsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const content = document.getElementById('content').value.trim();
+            if (!content) {
+                alert('Please enter news content to verify');
+                return;
+            }
+            
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            try {
+                const response = await fetch('/analyze-news', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content: content })
+                });
+                
+                const data = await response.json();
+                document.getElementById('loadingSpinner').style.display = 'none';
+                displayResults(data);
+                
+            } catch (error) {
+                document.getElementById('loadingSpinner').style.display = 'none';
+                alert('Error analyzing news content. Please try again.');
+                console.error('Error:', error);
+            }
+        });
+
+        function displayResults(data) {
+            const resultDiv = document.getElementById('resultContent');
+            const isFake = data.is_fake || data.fake_score >= 20;
+            const alertClass = isFake ? 'alert-warning' : 'alert-success';
+            const icon = isFake ? 'fa-exclamation-triangle' : 'fa-check-circle';
+            const message = data.message || (isFake ? 'This content shows signs of misinformation' : 'This content appears credible');
+            
+            let indicatorsHtml = '';
+            if (data.detected_indicators && data.detected_indicators.length > 0) {
+                indicatorsHtml = `
+                    <div class="indicators-section">
+                        <h6 class="section-heading">Detected Risk Indicators:</h6>
+                        <div>
+                            ${data.detected_indicators.map(indicator => 
+                                `<span class="badge badge-warning">${indicator}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let factorsHtml = '';
+            if (data.credibility_factors && data.credibility_factors.length > 0) {
+                factorsHtml = `
+                    <div class="factors-section">
+                        <h6 class="section-heading">Credibility Factors:</h6>
+                        <ul class="factor-list">
+                            ${data.credibility_factors.map(factor => 
+                                `<li><i class="fas fa-info-circle"></i>${factor}</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            resultDiv.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <i class="fas ${icon}"></i>
+                    <div>
+                        <strong>${isFake ? 'POTENTIALLY FAKE' : 'APPEARS CREDIBLE'}</strong><br>
+                        ${message}
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-label">
+                        <span>Fake News Risk Score</span>
+                        <span>${data.fake_score}%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar ${isFake ? 'bg-warning-bar' : 'bg-success-bar'}" 
+                             style="width: ${data.fake_score}%"></div>
+                    </div>
+                </div>
+                
+                ${indicatorsHtml}
+                ${factorsHtml}
+            `;
+            
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function clearForm() {
+            document.getElementById('content').value = '';
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

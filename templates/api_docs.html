@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation - Scam Detection{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <!-- Back Navigation -->
+    <div class="container-lg mt-5">
+        <a href="/" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Analyzer
+        </a>
+    </div>
+
+    <!-- API Documentation Header -->
+    <section class="results-header">
+        <div class="container-lg">
+            <h1 class="results-title">
+                <i class="fas fa-code me-3"></i>
+                API Documentation
+            </h1>
+            <p class="text-center text-light mt-3">
+                Integrate scam detection into your applications with our REST API
+            </p>
+        </div>
+    </section>
+
+    <!-- API Documentation Content -->
+    <section class="api-docs-wrapper">
+        <div class="container-lg">
+            <!-- Quick Start -->
+            <div class="api-section glass-card mb-5">
+                <h2><i class="fas fa-rocket me-2"></i>Quick Start</h2>
+                <p>Get started with the Scam Detection API in minutes. Send a POST request to analyze any message for potential scams.</p>
+                
+                <div class="endpoint-box">
+                    <div class="method-badge post">POST</div>
+                    <code>/api/detect-scam</code>
+                </div>
+            </div>
+
+            <!-- Authentication -->
+            <div class="api-section glass-card mb-5">
+                <h2><i class="fas fa-key me-2"></i>Authentication</h2>
+                <p>Currently, no authentication is required for the API. This is a public service for educational and testing purposes.</p>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> In production environments, proper authentication and rate limiting should be implemented.
+                </div>
+            </div>
+
+            <!-- Endpoints -->
+            <div class="api-section glass-card mb-5">
+                <h2><i class="fas fa-plug me-2"></i>Endpoints</h2>
+                
+                <!-- Detect Scam Endpoint -->
+                <div class="endpoint-detail">
+                    <h3>Analyze Message for Scams</h3>
+                    <div class="endpoint-box">
+                        <div class="method-badge post">POST</div>
+                        <code>/api/detect-scam</code>
+                    </div>
+                    
+                    <h4>Request Body</h4>
+                    <pre><code>{
+    "message": "Your message content here..."
+}</code></pre>
+
+                    <h4>Response</h4>
+                    <pre><code>{
+    "verdict": "Safe|Spam|Scam",
+    "risk_score": 25,
+    "confidence": 0.8542,
+    "reasons": [
+        "Message contains legitimate communication patterns",
+        "No suspicious URLs detected",
+        "Language tone appears normal"
+    ],
+    "detected_language": "en",
+    "message": "Original message content"
+}</code></pre>
+
+                    <h4>Response Fields</h4>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>verdict</code></td>
+                                    <td>string</td>
+                                    <td>Classification result: "Safe", "Spam", or "Scam"</td>
+                                </tr>
+                                <tr>
+                                    <td><code>risk_score</code></td>
+                                    <td>integer</td>
+                                    <td>Risk percentage from 0-100</td>
+                                </tr>
+                                <tr>
+                                    <td><code>confidence</code></td>
+                                    <td>float</td>
+                                    <td>Model confidence score from 0.0-1.0</td>
+                                </tr>
+                                <tr>
+                                    <td><code>reasons</code></td>
+                                    <td>array</td>
+                                    <td>List of reasons for the classification</td>
+                                </tr>
+                                <tr>
+                                    <td><code>detected_language</code></td>
+                                    <td>string</td>
+                                    <td>ISO language code of detected language</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Health Check Endpoint -->
+                <div class="endpoint-detail mt-4">
+                    <h3>Health Check</h3>
+                    <div class="endpoint-box">
+                        <div class="method-badge get">GET</div>
+                        <code>/api/health</code>
+                    </div>
+                    
+                    <h4>Response</h4>
+                    <pre><code>{
+    "status": "ok",
+    "service": "SafeGuard"
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Code Examples -->
+            <div class="api-section glass-card mb-5">
+                <h2><i class="fas fa-code me-2"></i>Code Examples</h2>
+                
+                <!-- JavaScript Example -->
+                <div class="code-example">
+                    <h3>JavaScript (Fetch API)</h3>
+                    <pre><code>const analyzeMessage = async (message) => {
+    try {
+        const response = await fetch('/api/detect-scam', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message })
+        });
+        
+        const result = await response.json();
+        console.log('Analysis result:', result);
+        return result;
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
+// Usage
+analyzeMessage("Click here to claim your prize!");</code></pre>
+                </div>
+
+                <!-- Python Example -->
+                <div class="code-example">
+                    <h3>Python (Requests)</h3>
+                    <pre><code>import requests
+import json
+
+def analyze_message(message):
+    url = "http://localhost:5000/api/detect-scam"
+    payload = {"message": message}
+    
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        return None
+
+# Usage
+result = analyze_message("Click here to claim your prize!")
+print(json.dumps(result, indent=2))</code></pre>
+                </div>
+
+                <!-- cURL Example -->
+                <div class="code-example">
+                    <h3>cURL</h3>
+                    <pre><code>curl -X POST http://localhost:5000/api/detect-scam \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Click here to claim your prize!"}'</code></pre>
+                </div>
+            </div>
+
+            <!-- Error Handling -->
+            <div class="api-section glass-card mb-5">
+                <h2><i class="fas fa-exclamation-triangle me-2"></i>Error Handling</h2>
+                
+                <h3>HTTP Status Codes</h3>
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>Status Code</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-success">200</span></td>
+                                <td>Success - Analysis completed</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-warning">400</span></td>
+                                <td>Bad Request - Missing or invalid message</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-danger">500</span></td>
+                                <td>Internal Server Error - Analysis failed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Error Response Format</h3>
+                <pre><code>{
+    "error": "Error description",
+    "detail": "Detailed error message"
+}</code></pre>
+            </div>
+
+            <!-- Rate Limits -->
+            <div class="api-section glass-card mb-5">
+                <h2><i class="fas fa-tachometer-alt me-2"></i>Rate Limits</h2>
+                <p>Currently, there are no enforced rate limits, but please use the API responsibly:</p>
+                <ul>
+                    <li>Maximum message length: 5,000 characters</li>
+                    <li>Recommended: No more than 100 requests per minute</li>
+                    <li>For high-volume usage, please contact us for dedicated access</li>
+                </ul>
+            </div>
+
+            <!-- Support -->
+            <div class="api-section glass-card">
+                <h2><i class="fas fa-life-ring me-2"></i>Support</h2>
+                <p>Need help with the API? Here are some resources:</p>
+                <ul>
+                    <li><strong>Test the API:</strong> Use the <a href="/">web interface</a> to test messages</li>
+                    <li><strong>Health Check:</strong> <a href="/api/health" target="_blank">Check API status</a></li>
+                    <li><strong>Issues:</strong> Report bugs or request features via GitHub</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+.api-docs-wrapper {
+    padding: 60px 20px;
+}
+
+.api-section {
+    padding: 40px;
+    margin-bottom: 30px;
+}
+
+.api-section h2 {
+    color: var(--text-light);
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.api-section h3 {
+    color: var(--text-light);
+    margin: 30px 0 15px 0;
+    font-size: 1.2rem;
+}
+
+.api-section h4 {
+    color: var(--text-accent);
+    margin: 20px 0 10px 0;
+    font-size: 1rem;
+}
+
+.endpoint-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    margin: 15px 0;
+    border: 1px solid var(--border-color);
+}
+
+.method-badge {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.method-badge.post {
+    background: var(--primary-green);
+    color: white;
+}
+
+.method-badge.get {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.endpoint-box code {
+    color: var(--text-accent);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+pre {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    overflow-x: auto;
+    margin: 15px 0;
+}
+
+pre code {
+    color: var(--text-light);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.code-example {
+    margin-bottom: 30px;
+}
+
+.table-dark {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+}
+
+.table-dark th {
+    border-color: var(--border-color);
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.table-dark td {
+    border-color: var(--border-color);
+    color: var(--text-muted);
+}
+
+.table-dark code {
+    color: var(--text-accent);
+    background: rgba(100, 255, 218, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid;
+    margin: 15px 0;
+}
+
+.alert-info {
+    background: rgba(55, 66, 250, 0.1);
+    border-color: rgba(55, 66, 250, 0.3);
+    color: var(--text-light);
+}
+
+.endpoint-detail {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.endpoint-detail:last-child {
+    border-bottom: none;
+}
+</style>
+{% endblock %}

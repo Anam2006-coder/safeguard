@@ -1,0 +1,14 @@
+runtime: python311
+
+# Free tier optimized settings
+instance_class: F1  # Free tier instance class
+
+env_variables:
+  SAFE_BROWSING_API_KEY: "your_api_key_here"
+
+automatic_scaling:
+  min_instances: 0  # Scale to zero when not in use (saves money)
+  max_instances: 2  # Limit instances for free tier
+  target_cpu_utilization: 0.8
+  min_idle_instances: 0
+  max_idle_instances: 1

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SafeGuard AI</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --card-bg: #16213e;
+            --text-light: #ffffff;
+            --text-muted: #b8c5d6;
+            --danger-color: #ff4757;
+            --warning-color: #ffa502;
+            --success-color: #2ed573;
+            --info-color: #3498db;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .logout-btn:hover {
+            color: var(--danger-color);
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-card.scam-card:hover {
+            border-color: var(--danger-color);
+            box-shadow: 0 15px 40px rgba(255, 71, 87, 0.3);
+        }
+
+        .feature-card.news-card:hover {
+            border-color: var(--info-color);
+            box-shadow: 0 15px 40px rgba(52, 152, 219, 0.3);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 25px;
+        }
+
+        .scam-icon {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger-color);
+        }
+
+        .news-icon {
+            background: rgba(52, 152, 219, 0.2);
+            color: var(--info-color);
+        }
+
+        .feature-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 25px;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: var(--text-muted);
+        }
+
+        .feature-list i {
+            color: var(--success-color);
+            margin-right: 10px;
+        }
+
+        .btn-custom {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: 2px solid;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .btn-scam {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-scam:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-news {
+            color: var(--info-color);
+            border-color: var(--info-color);
+        }
+
+        .btn-news:hover {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .info-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-section h5 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .step-item {
+            text-align: center;
+        }
+
+        .step-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .step-item h6 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .step-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .feature-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+            <h1 class="title">
+                <i class="fas fa-shield-alt"></i>
+                Welcome to SafeGuard AI
+            </h1>
+            <p class="subtitle">Your AI-powered detection platform for identifying scams and fake news</p>
+        </div>
+
+        <div class="feature-cards">
+            <div class="feature-card scam-card" onclick="location.href='/home'">
+                <div class="feature-icon scam-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Scam Detection</h3>
+                <p>
+                    Analyze messages, emails, and websites to identify potential scams and fraudulent content using advanced AI algorithms.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check-circle"></i>Email scam detection</li>
+                    <li><i class="fas fa-check-circle"></i>Website analysis</li>
+                    <li><i class="fas fa-check-circle"></i>Message verification</li>
+                    <li><i class="fas fa-check-circle"></i>Real-time protection</li>
+                </ul>
+                <button class="btn-custom btn-scam">Start Analysis</button>
+            </div>
+
+            <div class="feature-card news-card" onclick="location.href='/fake_news_detection'">
+                <div class="feature-icon news-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <h3>Fake News Detection</h3>
+                <p>
+                    Verify the authenticity of news articles and information sources to combat misinformation and ensure credible content.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check-circle"></i>Source verification</li>
+                    <li><i class="fas fa-check-circle"></i>Fact checking</li>
+                    <li><i class="fas fa-check-circle"></i>Credibility scoring</li>
+                    <li><i class="fas fa-check-circle"></i>Pattern analysis</li>
+                </ul>
+                <button class="btn-custom btn-news">Verify News</button>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h5>
+                <i class="fas fa-info-circle text-info"></i>
+                How SafeGuard Works
+            </h5>
+            <div class="steps-grid">
+                <div class="step-item">
+                    <div class="step-icon text-primary">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <h6>1. Submit Content</h6>
+                    <p>Upload or paste the content you want to analyze for potential threats</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-icon text-success">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h6>2. AI Analysis</h6>
+                    <p>Our AI algorithms analyze the content for suspicious patterns and indicators</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-icon text-warning">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h6>3. Get Results</h6>
+                    <p>Receive detailed analysis with risk scores and actionable recommendations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
